@@ -1,45 +1,38 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes } = require("sequelize");
 
-const sequelize = require('../config/connection');
+const sequelize = require("../config/connection");
 
-class ProductTag extends Model { }
+class ProductTag extends Model {}
 
 ProductTag.init(
   {
-    // define an id column
     id: {
-      // use the special Sequelize DataTypes object provide what type of data it is
       type: DataTypes.INTEGER,
-      // this is the equivalent of SQL's `NOT NULL` option
       allowNull: false,
-      // instruct that this is the Primary Key
       primaryKey: true,
-      // turn on auto increment
-      autoIncrement: true
+      autoIncrement: true,
     },
     product_id: {
-      // use the special Sequelize DataTypes object provide what type of data it is
       type: DataTypes.INTEGER,
       references: {
-        model: 'Product',
-        key: "id"
-      }
+        model: "product",
+        key: "id",
+      },
     },
     tag_id: {
-      // use the special Sequelize DataTypes object provide what type of data it is
       type: DataTypes.INTEGER,
       references: {
-        model: 'Tag',
-        key: "id"
-      }
-    }
+        model: 'tag',
+        key: 'id',
+      },
+    },
   },
   {
     sequelize,
     timestamps: false,
     freezeTableName: true,
     underscored: true,
-    modelName: 'product_tag',
+    modelName: "product_tag",
   }
 );
 

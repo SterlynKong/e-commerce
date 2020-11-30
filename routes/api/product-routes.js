@@ -7,23 +7,14 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 router.get('/', (req, res) => {
   // find all products
   Product.findAll({
-    order: [
-      [
-        'category_name',
-        'DESC'
-      ]
-    ],
     // be sure to include its associated Category and Tag data
     include: [
+      Category,
       {
-        model: Category,
-        include:
-        {
-          model: Tag,
-          through: ProductTag,
-        },
+        model: Tag,
+        through: ProductTag,
       },
-    ],
+    ]
   })
     .then((dbProducts) => res.json(dbProducts))
     .catch((err) => {
@@ -40,13 +31,10 @@ router.get('/:id', (req, res) => {
     },
     // be sure to include its associated Category and Tag data
     include: [
+      Category,
       {
-        model: Category,
-        include:
-        {
-          model: Tag,
-          through: ProductTag,
-        },
+        model: Tag,
+        through: ProductTag,
       },
     ],
   })
@@ -119,12 +107,10 @@ router.put('/:id', (req, res) => {
             tag_id,
           };
         });
-      // figure out which ones to remove
       const productTagsToRemove = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
         .map(({ id }) => id);
 
-      // run both actions
       return Promise.all([
         ProductTag.destroy({ where: { id: productTagsToRemove } }),
         ProductTag.bulkCreate(newProductTags),
@@ -139,6 +125,19 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
+  Product.destroy({
+    where: {
+      id: req.params.id
+    },
+  })
+  .then((products) => {
+    console.log(products);
+    res.json(products);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  })
 });
 
 module.exports = router;
